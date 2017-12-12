@@ -1,6 +1,6 @@
 'use strict';
 
-const { getInterface } = require('ni');
+const { getInterface } = require('network-interfaces');
 
 const createCagey = require('cagey').create;
 
