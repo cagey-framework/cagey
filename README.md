@@ -51,7 +51,7 @@ npm install cagey cagey-sessions cagey-peer-network cagey-client-messenger
 
 ## Examples
 
-TODO
+See the [./examples](./examples) folder and the various plugins for examples.
 
 ## API
 
