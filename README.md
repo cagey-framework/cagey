@@ -105,10 +105,10 @@ When developing plugins for Cagey, please keep the following rules in mind.
   Having said that, documented integration patterns of the plugin may absolutely depend on other existing plugins.
 - Prefix your NPM package name with `cagey-`.
 - Wherever relevant, try to use the same dependencies for core functionality. This creates a consistent user experience,
-  And reduces dependency chaos. For example:
+  and reduces dependency chaos. For example:
   - EventEmitter: [eventemitter2](https://www.npmjs.com/package/eventemitter2) (*always* emit using `emitAsync`)
   - Deep copy: [deep-copy](https://www.npmjs.com/package/deep-copy)
-- Parsing duration strings into milliseconds: [parse-duration](https://www.npmjs.com/package/parse-duration)
+  - Parsing duration strings into milliseconds: [parse-duration](https://www.npmjs.com/package/parse-duration)
 - A well written plugin has:
   - Documentation
   - Usage examples
