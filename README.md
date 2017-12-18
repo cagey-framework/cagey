@@ -67,10 +67,10 @@ A cagey object provides process lifecycle management features.
 **factory**
 
 ```js
-const cagey = require('cagey').create();
+const cagey = require('cagey').create({ log });
 ```
 
-Creates and returns an instance of the `Cagey` class.
+Creates and returns an instance of the `Cagey` class. You must pass a `Bunyan` logger instance in an object.
 
 **async cagey.shutdown()**
 
@@ -106,7 +106,12 @@ When developing plugins for Cagey, please keep the following rules in mind.
 - Prefix your NPM package name with `cagey-`.
 - Wherever relevant, try to use the same dependencies for core functionality. This creates a consistent user experience,
   and reduces dependency chaos. For example:
-  - EventEmitter: [eventemitter2](https://www.npmjs.com/package/eventemitter2) (*always* emit using `emitAsync`)
+  - Bunyan logger: [bunyan](https://www.npmjs.com/package/bunyan)
+    - *always* accept an external bunyan logger object in setup.
+    - *always* prefix log entries with `[subsystem-name] `.
+    - prefer to avoid `debug` and `info` levels; leave those to user land (ie: prefer `trace` for non-errors).
+  - EventEmitter: [eventemitter2](https://www.npmjs.com/package/eventemitter2)
+    - *always* emit using `emitAsync` so listeners can safely do I/O if they need to.
   - Deep copy: [deep-copy](https://www.npmjs.com/package/deep-copy)
   - Parsing duration strings into milliseconds: [parse-duration](https://www.npmjs.com/package/parse-duration)
 - A well written plugin has:
@@ -115,6 +120,33 @@ When developing plugins for Cagey, please keep the following rules in mind.
   - Unit tests
   - Static code analysis
   - A license that is identical to or compatible with Cagey
+
+### Typical API
+
+Your plugin should expose itself through a `create(apis, options)` method on the module:
+
+```js
+exports.create = function (apis, options) {
+	return new MyPlugin(apis, options);
+};
+```
+
+The constructor of your plugin can destructure the `apis` argument:
+
+```js
+const EventEmitter = require('eventemitter2').EventEmitter2;
+
+class MyPlugin extends EventEmitter {
+	constructor({ log }, options) {
+		super();
+
+		this.log = log;
+    }
+}
+```
+
+After that, it's up to you to shape your API.
+
 
 ## License
 

@@ -5,13 +5,16 @@ const EventEmitter = require('eventemitter2').EventEmitter2;
 
 
 class Db extends EventEmitter {
-	constructor(options) {
+	constructor({ log }, options) {
 		super();
 
+		this.log = log;
 		this._pool = mysql.createPool(options);
 	}
 
 	close() {
+		this.log.info('[db] Closing MySQL');
+
 		this.emit('beforeClose');
 
 		const pool = this._pool;
@@ -31,6 +34,8 @@ class Db extends EventEmitter {
 	}
 
 	query(query, ...args) {
+		this.log.trace('[db] query: %s', query);
+
 		this.emit('beforeQuery', query);
 
 		return new Promise((resolve, reject) => {
@@ -66,8 +71,8 @@ class Db extends EventEmitter {
 }
 
 
-module.exports = function (cagey, sessionManager, options) {
-	const db = new Db(options);
+module.exports = function ({ cagey, sessionManager, log }, options) {
+	const db = new Db({ log }, options);
 
 	sessionManager.on('persistUserData', async (userId, data) => {
 		await db.setUserData(userId, data);
