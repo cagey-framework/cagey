@@ -66,7 +66,7 @@ setupCluster(cagey, sessionManager, {
 
 // set up the stateful session cagey
 
-sessionManager.on('start', (session) => {
+sessionManager.on('started', (session) => {
 	const client = session.get('client'); // the client messenger that wraps around our incoming WebSocket
 
 	client.on('authenticate', async ({ username, password }) => {

@@ -30,7 +30,7 @@ module.exports = function (cagey, sessionManager, options) {
 		if (session) {
 			client = session.get('client');
 		} else {
-			session = sessionManager.createSession(key);
+			session = await sessionManager.create(key);
 			client = createClientMessenger({ serialize, deserialize });
 
 			session.set('client', client);
@@ -39,7 +39,7 @@ module.exports = function (cagey, sessionManager, options) {
 				client.disconnect();
 			});
 
-			await session.start();  // emits "sessionStart" on cagey
+			await session.start();  // emits "started" on session manager
 		}
 
 		// receive messages from websocket and emit on the client messenger
@@ -56,7 +56,7 @@ module.exports = function (cagey, sessionManager, options) {
 
 		// handle requests to close the session
 
-		session.client.setDisconnect(() => {
+		client.setDisconnect(() => {
 			ws.close();
 		});
 

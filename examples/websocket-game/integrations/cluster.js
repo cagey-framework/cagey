@@ -30,9 +30,10 @@ module.exports = function (cagey, sessionManager, options = {}) {
 	const sub = zmq.socket('sub');
 	const pub = zmq.socket('pub');
 
+	pub.bindSync(peerNetwork.getMyUri());
+
 	sub.unref();
 	pub.unref();
-	pub.bindSync(peerNetwork.getMyUri());
 
 	// update the URI with the actual endpoint
 
@@ -45,7 +46,7 @@ module.exports = function (cagey, sessionManager, options = {}) {
 	});
 
 	peerNetwork.setMessageSender((toUserId, message) => {
-		pub.send(toUserId, message);
+		pub.send([toUserId, message]);
 	});
 
 	peerNetwork.on('subscribe', (address) => {
@@ -73,8 +74,8 @@ module.exports = function (cagey, sessionManager, options = {}) {
 	// once a session has started, we can subscribe this user on the cluster
 	// and provide it a "peers" API
 
-	sessionManager.on('authenticated', (session, userId) => {
-		const messenger = peerNetwork.createMessenger(userId);
+	sessionManager.on('authenticated', async (session, userId) => {
+		const messenger = await peerNetwork.createMessenger(userId);
 
 		session.set('peers', messenger);
 
@@ -84,8 +85,6 @@ module.exports = function (cagey, sessionManager, options = {}) {
 	});
 
 	cagey.on('beforeShutdown', () => {
-		consul.stop();
-		sub.unbindSync();
-		pub.unbindSync();
+		// consul.stop();
 	});
 };
