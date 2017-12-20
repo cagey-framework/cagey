@@ -27,8 +27,8 @@ truths, nor that we won't ever change our minds on these.
 
 There are several layers at which you can observe your server technology. At its very heart, we want as much of our code
 as possible to reflect *business logic*, not framework patterns, or the database we chose, or the network technology,
-etc. If we ever want to switch frameworks, databases, loggers, KPI services, etc. this should be as painless as
-possible. The fundamental nature of our business logic should not be contaminated by these choices.
+etc. If we ever want to switch frameworks, databases, KPI services, etc. this should be as painless as possible. The
+fundamental nature of our business logic should not be contaminated by these choices.
 
 Cagey attempts to solve this by keeping concerns separated as follows:
 
@@ -72,14 +72,14 @@ A cagey object provides process lifecycle management features.
 const cagey = require('cagey').create({ log });
 ```
 
-Creates and returns an instance of the `Cagey` class. You must pass a `Bunyan` logger instance in an object.
+Creates and returns an instance of the `Cagey` class. You must pass a `cagey-logger` instance in an object.
 
 **async cagey.shutdown()**
 
 This emits:
 
-- `"beforeShutdown" ()` on the cagey.
-- `"shutdown" ()` on the cagey.
+- `"beforeShutdown" ()` on the cagey instance.
+- `"shutdown" ()` on the cagey instance.
 
 The events being emitted can be used to stop certain subsystems, and close connections.
 
@@ -93,9 +93,10 @@ cagey.on('shutdown', () => { process.exit(0); });
 
 ## Plugins
 
-- Client/server messaging: [cagey-client-messenger](https://github.com/cagey-framework/cagey-client-messenger)
-- Cagey distributed cluster messaging: [cagey-peer-network](https://github.com/cagey-framework/cagey-peer-network)
-- User sessions: [cagey-sessions](https://github.com/cagey-framework/cagey-sessions)
+- Logger: [cagey-logger](https://www.npmjs.com/package/cagey-logger)
+- Client/server messaging: [cagey-client-messenger](https://www.npmjs.com/package/cagey-client-messenger)
+- Cagey distributed cluster messaging: [cagey-peer-network](https://www.npmjs.com/package/cagey-peer-network)
+- User sessions: [cagey-sessions](https://www.npmjs.com/package/cagey-sessions)
 
 ## Plugin development
 
@@ -108,20 +109,23 @@ When developing plugins for Cagey, please keep the following rules in mind.
 - Prefix your NPM package name with `cagey-`.
 - Wherever relevant, try to use the same dependencies for core functionality. This creates a consistent user experience,
   and reduces dependency chaos. For example:
-  - Bunyan logger: [bunyan](https://www.npmjs.com/package/bunyan)
-    - *always* accept an external bunyan logger object in setup.
+  - Logging: [cagey-logger](https://www.npmjs.com/package/cagey-logger)
+    - *always* accept an external cagey-logger object in setup.
     - *always* prefix log entries with `[subsystem-name] `.
-    - prefer to avoid `debug` and `info` levels; leave those to user land (ie: prefer `trace` for non-errors).
+    - usually stick to the `debug` level; leave higher levels to user land.
+    - do not log errors that you do not catch and handle; leave that to user land.
   - EventEmitter: [eventemitter2](https://www.npmjs.com/package/eventemitter2)
     - *always* emit using `emitAsync` so listeners can safely do I/O if they need to.
   - Deep copy: [deep-copy](https://www.npmjs.com/package/deep-copy)
-  - Parsing duration strings into milliseconds: [parse-duration](https://www.npmjs.com/package/parse-duration)
+  - Configure duration using string notation, parseable with [parse-duration](https://www.npmjs.com/package/parse-duration)
+  - Configure bytes using string notation, parseable with [bytes](https://www.npmjs.com/package/bytes)
 - A well written plugin has:
   - Documentation
   - Usage examples
   - Unit tests
   - Static code analysis
   - A license that is identical to or compatible with Cagey
+  - TravisCI and Greenkeeper
 
 ### Typical API
 
@@ -139,10 +143,10 @@ The constructor of your plugin can destructure the `apis` argument:
 const EventEmitter = require('eventemitter2').EventEmitter2;
 
 class MyPlugin extends EventEmitter {
-	constructor({ log }, options) {
-		super();
+    constructor({ log }, options) {
+        super();
 
-		this.log = log;
+        this.log = log;
     }
 }
 ```

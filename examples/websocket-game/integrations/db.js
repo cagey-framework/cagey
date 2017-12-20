@@ -34,7 +34,7 @@ class Db extends EventEmitter {
 	}
 
 	query(query, ...args) {
-		this.log.trace('[db] query: %s', query);
+		this.log.debug('[db] query: %s', query);
 
 		this.emit('beforeQuery', query);
 

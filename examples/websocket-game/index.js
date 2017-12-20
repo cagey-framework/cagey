@@ -2,7 +2,7 @@
 
 const { getInterface } = require('network-interfaces');
 
-const log = require('bunyan').createLogger({ name: 'my-game' });
+const log = require('cagey-logger').create({ name: 'my-game' });
 
 const createCagey = require('cagey').create;
 
