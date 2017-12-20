@@ -1,5 +1,7 @@
 # Cagey core
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/cagey-framework/cagey.svg)](https://greenkeeper.io/)
+
 **WORK IN PROGRESS**
 
 ![Cagey Logo](./logo.png)
