@@ -14,7 +14,7 @@ function deserialize(message) {
 }
 
 
-module.exports = function (cagey, sessionManager, options = {}) {
+module.exports = function ({ cagey, sessionManager, log }, options = {}) {
 	// interface or address is required, but not both
 	// port may be '*' to assign a random available port
 
@@ -42,18 +42,26 @@ module.exports = function (cagey, sessionManager, options = {}) {
 	// set up message passing
 
 	sub.on('message', (address, message) => {
+		log.debug({ message }, 'Received message on subscriber');
+
 		peerNetwork.receiveMessage(address, message);
 	});
 
 	peerNetwork.setMessageSender((toUserId, message) => {
+		log.debug({ toUserId, message }, 'Sending message on publisher');
+
 		pub.send([toUserId, message]);
 	});
 
 	peerNetwork.on('subscribe', (address) => {
+		log.debug({ address }, 'Subscribing');
+
 		sub.subscribe(address);
 	});
 
 	peerNetwork.on('unsubscribe', (address) => {
+		log.debug({ address }, 'Unsubscribing');
+
 		sub.unsubscribe(address);
 	});
 
@@ -75,6 +83,8 @@ module.exports = function (cagey, sessionManager, options = {}) {
 	// and provide it a "peers" API
 
 	sessionManager.on('authenticated', async (session, userId) => {
+		log.info({ userId }, 'User authenticated');
+
 		const messenger = await peerNetwork.createMessenger(userId);
 
 		session.set('peers', messenger);

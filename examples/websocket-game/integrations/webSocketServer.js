@@ -13,7 +13,7 @@ function deserialize(message) {
 }
 
 
-module.exports = function (cagey, sessionManager, options) {
+module.exports = function ({ cagey, sessionManager, log }, options) {
 	const wss = new WebSocketServer(options);
 
 	cagey.on('beforeShutdown', () => {
@@ -64,6 +64,12 @@ module.exports = function (cagey, sessionManager, options) {
 
 		ws.on('close', () => {
 			client.disconnected();
+		});
+
+		ws.on('error', (error) => {
+			// usually just a disconnect initiated by the client
+			// the socket will emit 'close'
+			log.debug({ error }, 'WebSocket error');
 		});
 
 		const { address, port } = ws._socket;
