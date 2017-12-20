@@ -1,6 +1,6 @@
 {
   "name": "cagey",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Cagey game framework",
   "main": "lib/index.js",
   "scripts": {
