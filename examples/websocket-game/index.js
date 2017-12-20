@@ -2,6 +2,8 @@
 
 const { getInterface } = require('network-interfaces');
 
+const log = require('bunyan').createLogger({ name: 'my-game' });
+
 const createCagey = require('cagey').create;
 
 const createHttpServer = require('http').createServer;
@@ -14,7 +16,7 @@ const hashPassword = require('./hashPassword'); // not in this example
 
 // set up cagey
 
-const cagey = createCagey();
+const cagey = createCagey({ log });
 
 function shutdown() {
 	cagey.shutdown();
@@ -25,7 +27,7 @@ process.on('SIGINT', shutdown);
 
 // set up sessions
 
-const sessionManager = setupSessions(cagey, {
+const sessionManager = setupSessions({ cagey, log }, {
 	userData: {
 		persistence: {
 			interval: '30s',
@@ -36,7 +38,7 @@ const sessionManager = setupSessions(cagey, {
 
 // set up database client
 
-const db = setupDb(cagey, sessionManager, {
+const db = setupDb({ cagey, sessionManager, log }, {
 	connectionLimit: 10,
 	host: 'example.org',
 	user: 'bob',
@@ -52,13 +54,13 @@ const httpServer = createHttpServer({
 
 // set up WebSocket server
 
-setupWebSocketServer(cagey, sessionManager, {
+setupWebSocketServer({ cagey, sessionManager, log }, {
 	server: httpServer
 });
 
 // set up the peer discovery and messenging system
 
-setupCluster(cagey, sessionManager, {
+setupCluster({ cagey, sessionManager, log }, {
 	interface: getInterface({ internal: false }),
 	port: 12345
 });
