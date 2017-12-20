@@ -19,7 +19,7 @@ Cagey is a code philosophy that makes the development of stateful game servers i
 maintainable. It provides a foundation of rules for how things are supposed to connect, and an ecosystem of plugins that
 follow this. The whole point of Cagey is to make integration with other technologies obvious and simple, while keeping a
 very strict separation of concerns. For more information on these rules that plugins need to follow, please read
-[#plugin-development](Plugin development).
+[Plugin development](#plugin-development).
 
 Software development (which very much includes framework development) is not a solved problem. And as we move on and try
 new concepts, we have to make some very strict decisions. That does not mean we believe these truths to be objective
