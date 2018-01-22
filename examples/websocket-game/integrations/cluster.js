@@ -82,9 +82,7 @@ module.exports = function ({ cagey, sessionManager, log }, options = {}) {
 	// once a session has started, we can subscribe this user on the cluster
 	// and provide it a "peers" API
 
-	sessionManager.on('authenticated', async (session, userId) => {
-		log.info({ userId }, 'User authenticated');
-
+	sessionManager.on('identified', async (session, userId) => {
 		const messenger = await peerNetwork.createMessenger(userId);
 
 		session.set('peers', messenger);
